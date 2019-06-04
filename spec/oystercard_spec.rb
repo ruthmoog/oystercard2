@@ -17,7 +17,6 @@ RSpec.describe Oystercard do
   end
 
   it 'deducts a fare amount of 3' do
-    subject.deduct_fare(3)
-    expect(subject.balance).to eq(-3)
+    expect{ subject.deduct_fare 3 }.to change{ subject.balance }.by -3
   end
 end
