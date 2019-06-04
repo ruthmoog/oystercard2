@@ -19,4 +19,18 @@ RSpec.describe Oystercard do
   it 'deducts a fare amount of 3' do
     expect{ subject.deduct_fare 3 }.to change{ subject.balance }.by -3
   end
+
+  it 'is not in journey' do
+    expect(subject).not_to be_in_journey
+  end
+
+  it 'in journey when touch in' do
+    subject.touch_in
+    expect(subject).to be_in_journey
+  end
+
+  it 'not in journey when touch out' do
+    subject.touch_out
+    expect(subject).not_to be_in_journey
+  end
 end
