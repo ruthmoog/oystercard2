@@ -3,13 +3,13 @@ require "oystercard"
 RSpec.describe Oystercard do
   FUNDS = 10
   LIMIT = 90
+  let(:top_up) { subject.top_up(FUNDS) }
   it 'has an initial balance of 0' do
     expect(subject.balance).to eq(0)
   end
 
   it 'receives a top up amount of 5' do
-    subject.top_up(FUNDS)
-
+    top_up
     expect(subject.balance).to eq(FUNDS)
   end
 
@@ -23,25 +23,31 @@ RSpec.describe Oystercard do
   end
 
   it 'in journey when touch in' do
-    subject.top_up(FUNDS)
-    subject.touch_in
+    top_up
+    subject.touch_in("Aldgate")
     expect(subject).to be_in_journey
   end
 
   it 'not in journey when touch out' do
-    subject.top_up(FUNDS)
-    subject.touch_in
+    top_up
+    subject.touch_in("Aldgate")
     subject.touch_out
     expect(subject).not_to be_in_journey
   end
 
   it 'raises error when balance is less than 1' do
-    expect { subject.touch_in }.to raise_error("Not enough money")
+    expect { subject.touch_in("Aldgate") }.to raise_error("Not enough money")
   end
 
   it "reduces balance by min fare on touch_out" do
-    subject.top_up(FUNDS)
-    subject.touch_in
+    top_up
+    subject.touch_in("Aldgate")
     expect{ subject.touch_out }.to change{ subject.balance }.by (-Oystercard::MINIMUM_FARE)
+  end
+
+  it 'records the entry station' do
+    top_up
+    subject.touch_in("Aldgate")
+    expect(subject.entry_station).to eq("Aldgate")
   end
 end
