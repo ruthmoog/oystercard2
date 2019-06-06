@@ -3,9 +3,9 @@ require "oystercard"
 RSpec.describe Oystercard do
   FUNDS = 10
   LIMIT = 90
-  START_STATION = "Aldgate"
+  let(:station) { double :station }
   let(:top_up) { subject.top_up(FUNDS) }
-  let(:touch_in) { subject.touch_in(START_STATION) }
+  let(:touch_in) { subject.touch_in(station) }
 
   context 'on instantiation' do
     it 'has an initial balance of 0' do
@@ -47,7 +47,7 @@ RSpec.describe Oystercard do
 
   context 'has a balance of less than 1' do
     it 'raises error on touch in' do
-      expect { touch_in }.to raise_error("Not enough money")
+      expect { touch_in }.to raise_error("Insufficient balance to touch in")
     end
   end
 
@@ -63,6 +63,6 @@ RSpec.describe Oystercard do
 
     touch_in
 
-    expect(subject.entry_station).to eq("Aldgate")
+    expect(subject.entry_station).to eq(station)
   end
 end
