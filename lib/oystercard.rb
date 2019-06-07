@@ -20,7 +20,7 @@ class Oystercard
   end
 
   def in_journey?
-    @in_use
+    !!entry_station
   end
 
   def touch_in(entry_station)
