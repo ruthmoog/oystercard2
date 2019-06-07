@@ -3,9 +3,13 @@ require "oystercard"
 RSpec.describe Oystercard do
   FUNDS = 10
   LIMIT = 90
-  START_STATION = "Aldgate"
+  # START_STATION = :Aldgate
+  let(:entry_station) { double :station }
+  let(:exit_station) { double :station }
   let(:top_up) { subject.top_up(FUNDS) }
-  let(:touch_in) { subject.touch_in(START_STATION) }
+  let(:touch_in) { subject.touch_in(entry_station) }
+  let(:touch_out) {subject.touch_out(exit_station) }
+  let(:journey) { { entry_station: entry_station, exit_station: exit_station } }
 
   context 'on instantiation' do
     it 'has an initial balance of 0' do
@@ -14,6 +18,10 @@ RSpec.describe Oystercard do
 
     it 'is not in journey' do
       expect(subject).not_to be_in_journey
+    end
+
+    it 'has an empty list of journeys by default' do
+      expect(subject.journeys).to be_empty
     end
 
   end
@@ -40,7 +48,7 @@ RSpec.describe Oystercard do
     top_up
     touch_in
 
-    subject.touch_out
+    touch_out
 
     expect(subject).not_to be_in_journey
   end
@@ -55,7 +63,7 @@ RSpec.describe Oystercard do
     top_up
     touch_in
 
-    expect{ subject.touch_out }.to change{ subject.balance }.by (-Oystercard::MINIMUM_FARE)
+    expect{ touch_out }.to change{ subject.balance }.by (-Oystercard::MINIMUM_FARE)
   end
 
   it 'records the entry station' do
@@ -63,6 +71,15 @@ RSpec.describe Oystercard do
 
     touch_in
 
-    expect(subject.entry_station).to eq("Aldgate")
+    expect(subject.journeys).to eq([{ start: entry_station, end: nil }])
   end
+
+  it 'can check the journey history' do
+    top_up
+    touch_in
+    touch_out
+
+    expect(subject.journeys).to eq([{ start: entry_station, end: exit_station }])
+  end
+
 end
