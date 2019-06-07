@@ -7,7 +7,6 @@ class Oystercard
 
   def initialize
     @balance = 0
-    @in_use = false
     @journeys = []
   end
 
@@ -20,7 +19,9 @@ class Oystercard
   end
 
   def in_journey?
-    @in_use
+    if !@journeys.empty?
+      @journeys.last[:end] == :incomplete
+    end
   end
 
   def touch_in(entry_station)
@@ -28,12 +29,11 @@ class Oystercard
       raise "Insufficient balance to touch in"
     end
     @in_use = true
-    @journeys << { start: entry_station, end: nil }
+    @journeys << { start: entry_station, end: :incomplete }
   end
 
   def touch_out(exit_station)
     deduct_fare(MINIMUM_FARE)
-    @in_use = false
     @journeys[0][:end] = exit_station
   end
 

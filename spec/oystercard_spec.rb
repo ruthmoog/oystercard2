@@ -72,7 +72,7 @@ RSpec.describe Oystercard do
 
     touch_in
 
-    expect(subject.journeys).to eq([{ start: entry_station, end: nil }])
+    expect(subject.journeys).to eq([{ start: entry_station, end: :incomplete }])
   end
 
   it 'can check the journey history' do
